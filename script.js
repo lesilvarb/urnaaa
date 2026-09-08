@@ -1,807 +1,463 @@
-/* =========================================
- URNA ELETRÔNICA - FUNCIONAMENTO
-========================================= */
+/* =====================================
+   ELEMENTOS
+===================================== */
 
+const teclas =
+    document.querySelectorAll(".tecla");
 
-/* =========================================
- CANDIDATOS FICTÍCIOS
-========================================= */
+const botaoBranco =
+    document.getElementById("branco");
 
-const candidatos = {
+const botaoCorrige =
+    document.getElementById("corrige");
 
-  governador: {
-      "12": {
-          nome: "João Silva",
-          partido: "Partido da União"
-      },
+const botaoConfirma =
+    document.getElementById("confirma");
 
-      "45": {
-          nome: "Maria Souza",
-          partido: "Partido Democrático"
-      }
-  },
-
-
-  senador: {
-      "123": {
-          nome: "Carlos Oliveira",
-          partido: "Partido Popular"
-      },
-
-      "456": {
-          nome: "Ana Santos",
-          partido: "Partido Nacional"
-      }
-  },
-
-
-  deputado: {
-      "12345": {
-          nome: "Lucas Ferreira",
-          partido: "Partido da Juventude"
-      },
-
-      "54321": {
-          nome: "Juliana Costa",
-          partido: "Partido Social"
-      }
-  }
-
-};
-
-
-/* =========================================
- ELEMENTOS DO HTML
-========================================= */
 
 const cargoTela =
-  document.getElementById("cargoTela");
+    document.getElementById("cargoTela");
 
-
-const numero1 =
-  document.getElementById("numero1");
-
-const numero2 =
-  document.getElementById("numero2");
-
-const numero3 =
-  document.getElementById("numero3");
-
-const numero4 =
-  document.getElementById("numero4");
-
-const numero5 =
-  document.getElementById("numero5");
+const mensagemUrna =
+    document.getElementById("mensagemUrna");
 
 
 const nomeCandidato =
-  document.getElementById("nomeCandidato");
+    document.getElementById("nomeCandidato");
 
 const partidoCandidato =
-  document.getElementById("partidoCandidato");
+    document.getElementById("partidoCandidato");
 
-const mensagemUrna =
-  document.getElementById("mensagemUrna");
-
-
-const teclas =
-  document.querySelectorAll(".tecla");
+const dadosCandidato =
+    document.getElementById("dadosCandidato");
 
 
-const botaoBranco =
-  document.getElementById("branco");
-
-const botaoCorrige =
-  document.getElementById("corrige");
-
-const botaoConfirma =
-  document.getElementById("confirma");
+const numeroEleitor =
+    document.getElementById("numeroEleitor");
 
 
-/* =========================================
- CONTROLE DA VOTAÇÃO
-========================================= */
+const caixasNumero = [
 
+    document.getElementById("numero1"),
 
-/* Cargos da eleição */
+    document.getElementById("numero2"),
 
-const cargos = [
+    document.getElementById("numero3"),
 
-  {
-      nome: "GOVERNADOR",
-      tipo: "governador",
-      quantidade: 2
-  },
+    document.getElementById("numero4"),
 
-  {
-      nome: "SENADOR",
-      tipo: "senador",
-      quantidade: 3
-  },
-
-  {
-      nome: "DEPUTADO",
-      tipo: "deputado",
-      quantidade: 5
-  }
+    document.getElementById("numero5")
 
 ];
 
 
-/* Começa pelo governador */
+/* =====================================
+   CANDIDATOS FICTÍCIOS
+===================================== */
 
-let cargoAtual = 0;
-
-
-/* Números digitados */
-
-let numerosDigitados = "";
+const candidatos = {
 
 
-/* Guarda se o voto foi confirmado */
+    GOVERNADOR: {
+
+        "12345": {
+
+            nome:
+                "CARLOS ALMEIDA",
+
+            partido:
+                "PARTIDO FUTURO"
+
+        },
+
+
+        "54321": {
+
+            nome:
+                "ANA FERREIRA",
+
+            partido:
+                "UNIÃO POPULAR"
+
+        }
+
+    },
+
+
+    SENADOR: {
+
+        "11111": {
+
+            nome:
+                "RAFAEL COSTA",
+
+            partido:
+                "PARTIDO NACIONAL"
+
+        },
+
+
+        "22222": {
+
+            nome:
+                "JULIANA MARTINS",
+
+            partido:
+                "MOVIMENTO DEMOCRÁTICO"
+
+        }
+
+    },
+
+
+    DEPUTADO: {
+
+        "33333": {
+
+            nome:
+                "LUCAS SANTOS",
+
+            partido:
+                "PARTIDO CIDADÃO"
+
+        },
+
+
+        "44444": {
+
+            nome:
+                "MARINA SOUZA",
+
+            partido:
+                "ALIANÇA SOCIAL"
+
+        }
+
+    }
+
+};
+
+
+/* =====================================
+   ESTADO DA VOTAÇÃO
+===================================== */
+
+const cargos = [
+
+    "GOVERNADOR",
+
+    "SENADOR",
+
+    "DEPUTADO"
+
+];
+
+
+let indiceCargo = 0;
+
+let numeroDigitado = "";
+
+let votoBranco = false;
 
 let votoConfirmado = false;
 
-
-/* =========================================
- SOM DA URNA
-========================================= */
-
-/* =========================================
-   SISTEMA DE SONS DA URNA
-========================================= */
-
-/*
-   Cria o contexto responsável
-   por gerar os sons
-*/
-
-const AudioContexto =
-    window.AudioContext ||
-    window.webkitAudioContext;
+let eleitorAtual = 1;
 
 
-/*
-   Guarda o sistema de áudio
-*/
+/* =====================================
+   SONS
+===================================== */
 
-let contextoAudio = null;
+function criarSom(
+
+    frequencia,
+
+    duracao
+
+) {
+
+    try {
+
+        const audioContext =
+
+            new (
+
+                window.AudioContext ||
+
+                window.webkitAudioContext
+
+            )();
 
 
-/* =========================================
-   PREPARAR O ÁUDIO
-========================================= */
+        const oscilador =
+            audioContext.createOscillator();
 
-function prepararAudio() {
 
-    /*
-       Cria o áudio apenas quando
-       o usuário interage com a urna
-    */
+        const volume =
+            audioContext.createGain();
 
-    if (!contextoAudio) {
 
-        contextoAudio =
-            new AudioContexto();
+        oscilador.frequency.value =
+            frequencia;
+
+
+        volume.gain.setValueAtTime(
+
+            0.12,
+
+            audioContext.currentTime
+
+        );
+
+
+        oscilador.connect(volume);
+
+        volume.connect(
+
+            audioContext.destination
+
+        );
+
+
+        oscilador.start();
+
+
+        volume.gain.exponentialRampToValueAtTime(
+
+            0.001,
+
+            audioContext.currentTime +
+            duracao
+
+        );
+
+
+        oscilador.stop(
+
+            audioContext.currentTime +
+            duracao
+
+        );
 
     }
 
+    catch (erro) {
 
-    /*
-       Se o navegador bloqueou
-       temporariamente o áudio,
-       ativa novamente
-    */
-
-    if (
-        contextoAudio.state === "suspended"
-    ) {
-
-        contextoAudio.resume();
+        console.log(
+            "Som indisponível."
+        );
 
     }
 
 }
 
 
-/* =========================================
-   SOM DAS TECLAS NUMÉRICAS
-========================================= */
+function somTecla() {
 
-function tocarSomTecla() {
+    criarSom(
 
-    prepararAudio();
+        500,
 
-
-    const oscilador =
-        contextoAudio.createOscillator();
-
-
-    const volume =
-        contextoAudio.createGain();
-
-
-    /*
-       Frequência do som
-    */
-
-    oscilador.frequency.value =
-        650;
-
-
-    /*
-       Tipo do som
-    */
-
-    oscilador.type =
-        "square";
-
-
-    /*
-       Volume inicial
-    */
-
-    volume.gain.setValueAtTime(
-
-        0.08,
-
-        contextoAudio.currentTime
-
-    );
-
-
-    /*
-       O volume diminui rapidamente
-    */
-
-    volume.gain.exponentialRampToValueAtTime(
-
-        0.001,
-
-        contextoAudio.currentTime + 0.08
-
-    );
-
-
-    /*
-       Liga os componentes
-    */
-
-    oscilador.connect(volume);
-
-    volume.connect(
-        contextoAudio.destination
-    );
-
-
-    /*
-       Inicia o som
-    */
-
-    oscilador.start();
-
-
-    /*
-       Finaliza o som
-    */
-
-    oscilador.stop(
-
-        contextoAudio.currentTime + 0.08
+        0.08
 
     );
 
 }
 
 
-/* =========================================
-   SOM DO BOTÃO CORRIGE
-========================================= */
+function somConfirma() {
 
-function tocarSomCorrige() {
+    criarSom(
 
-    prepararAudio();
+        700,
 
-
-    const oscilador =
-        contextoAudio.createOscillator();
-
-
-    const volume =
-        contextoAudio.createGain();
-
-
-    oscilador.frequency.value =
-        350;
-
-
-    oscilador.type =
-        "square";
-
-
-    volume.gain.setValueAtTime(
-
-        0.07,
-
-        contextoAudio.currentTime
+        0.15
 
     );
 
 
-    volume.gain.exponentialRampToValueAtTime(
+    setTimeout(
 
-        0.001,
+        function () {
 
-        contextoAudio.currentTime + 0.12
+            criarSom(
 
-    );
+                900,
 
+                0.3
 
-    oscilador.connect(volume);
+            );
 
-    volume.connect(
-        contextoAudio.destination
-    );
-
-
-    oscilador.start();
-
-
-    oscilador.stop(
-
-        contextoAudio.currentTime + 0.12
-
-    );
-
-}
-
-
-/* =========================================
-   SOM DO BOTÃO BRANCO
-========================================= */
-
-function tocarSomBranco() {
-
-    prepararAudio();
-
-
-    const oscilador =
-        contextoAudio.createOscillator();
-
-
-    const volume =
-        contextoAudio.createGain();
-
-
-    oscilador.frequency.value =
-        500;
-
-
-    oscilador.type =
-        "sine";
-
-
-    volume.gain.setValueAtTime(
-
-        0.08,
-
-        contextoAudio.currentTime
-
-    );
-
-
-    volume.gain.exponentialRampToValueAtTime(
-
-        0.001,
-
-        contextoAudio.currentTime + 0.15
-
-    );
-
-
-    oscilador.connect(volume);
-
-    volume.connect(
-        contextoAudio.destination
-    );
-
-
-    oscilador.start();
-
-
-    oscilador.stop(
-
-        contextoAudio.currentTime + 0.15
-
-    );
-
-}
-
-
-/* =========================================
-   SOM DO BOTÃO CONFIRMA
-========================================= */
-
-function tocarSomConfirma() {
-
-    prepararAudio();
-
-
-    const oscilador =
-        contextoAudio.createOscillator();
-
-
-    const volume =
-        contextoAudio.createGain();
-
-
-    oscilador.frequency.value =
-        750;
-
-
-    oscilador.type =
-        "sine";
-
-
-    volume.gain.setValueAtTime(
-
-        0.1,
-
-        contextoAudio.currentTime
-
-    );
-
-
-    volume.gain.exponentialRampToValueAtTime(
-
-        0.001,
-
-        contextoAudio.currentTime + 0.18
-
-    );
-
-
-    oscilador.connect(volume);
-
-    volume.connect(
-        contextoAudio.destination
-    );
-
-
-    oscilador.start();
-
-
-    oscilador.stop(
-
-        contextoAudio.currentTime + 0.18
-
-    );
-
-}
-
-
-/* =========================================
-   MELODIA FINAL DA URNA
-========================================= */
-
-function tocarSomFinal() {
-
-    prepararAudio();
-
-
-    /*
-       Notas da melodia de encerramento
-    */
-
-    const notas = [
-
-        {
-            frequencia: 523.25,
-            inicio: 0,
-            duracao: 0.18
         },
 
-        {
-            frequencia: 659.25,
-            inicio: 0.18,
-            duracao: 0.18
-        },
-
-        {
-            frequencia: 783.99,
-            inicio: 0.36,
-            duracao: 0.35
-        }
-
-    ];
-
-
-    /*
-       Cria cada nota
-    */
-
-    notas.forEach(
-
-        function (nota) {
-
-            const oscilador =
-                contextoAudio.createOscillator();
-
-
-            const volume =
-                contextoAudio.createGain();
-
-
-            oscilador.frequency.value =
-                nota.frequencia;
-
-
-            oscilador.type =
-                "sine";
-
-
-            /*
-               Volume da nota
-            */
-
-            volume.gain.setValueAtTime(
-
-                0.12,
-
-                contextoAudio.currentTime +
-                nota.inicio
-
-            );
-
-
-            /*
-               Finaliza o volume suavemente
-            */
-
-            volume.gain.exponentialRampToValueAtTime(
-
-                0.001,
-
-                contextoAudio.currentTime +
-                nota.inicio +
-                nota.duracao
-
-            );
-
-
-            oscilador.connect(volume);
-
-            volume.connect(
-                contextoAudio.destination
-            );
-
-
-            oscilador.start(
-
-                contextoAudio.currentTime +
-                nota.inicio
-
-            );
-
-
-            oscilador.stop(
-
-                contextoAudio.currentTime +
-                nota.inicio +
-                nota.duracao
-
-            );
-
-        }
+        170
 
     );
 
 }
 
-/* =========================================
- ATUALIZAR TELA
-========================================= */
 
-function atualizarTela() {
-
-    /* Pega as informações do cargo atual */
-
-    const cargo =
-        cargos[cargoAtual];
-
-
-    /* Mostra o nome do cargo */
-
-    cargoTela.textContent =
-        cargo.nome;
-
-
-    /* Guarda todas as caixas de números */
-
-    const caixas = [
-
-        numero1,
-        numero2,
-        numero3,
-        numero4,
-        numero5
-
-    ];
-
-
-    /* Percorre todas as caixas */
-
-    caixas.forEach(
-
-        function (caixa, indice) {
-
-            /*
-               Se o cargo precisa dessa posição,
-               a caixa aparece
-            */
-
-            if (indice < cargo.quantidade) {
-
-                caixa.style.display =
-                    "flex";
-
-            }
-
-            /*
-               Se não precisa,
-               a caixa desaparece
-            */
-
-            else {
-
-                caixa.style.display =
-                    "none";
-
-            }
-
-
-            /* Coloca o número digitado */
-
-            caixa.textContent =
-                numerosDigitados[indice] || "";
-
-        }
-
-    );
-
-
-    /* Verifica o candidato */
-
-    verificarCandidato();
-
-}
-
-/* =========================================
- VERIFICAR CANDIDATO
-========================================= */
-
-function verificarCandidato() {
-
-  const cargo =
-      cargos[cargoAtual];
-
-
-  /* Procura o candidato pelo número */
-
-  const candidato =
-      candidatos[cargo.tipo][
-          numerosDigitados
-      ];
-
-
-  if (candidato) {
-
-      nomeCandidato.textContent =
-          candidato.nome;
-
-
-      partidoCandidato.textContent =
-          candidato.partido;
-
-
-      mensagemUrna.textContent =
-          "CONFIRA SEUS DADOS";
-
-
-  }
-
-  else {
-
-      nomeCandidato.textContent =
-          "Digite o número";
-
-
-      partidoCandidato.textContent =
-          "---";
-
-
-      mensagemUrna.textContent =
-          "DIGITE O NÚMERO DO CANDIDATO";
-
-  }
-
-}
-
-
-/* =========================================
- DIGITAR NÚMERO
-========================================= */
+/* =====================================
+   DIGITAR NÚMERO
+===================================== */
 
 teclas.forEach(
 
-  function (tecla) {
+    function (tecla) {
 
-      tecla.addEventListener(
+        tecla.addEventListener(
 
-          "click",
+            "click",
 
-          function () {
+            function () {
 
-              /* Não permite votar após confirmar */
+                if (
 
-              if (votoConfirmado) {
+                    votoConfirmado ||
 
-                  return;
+                    numeroDigitado.length >= 5
 
-              }
+                ) {
 
+                    return;
 
-              const quantidadeMaxima =
-                  cargos[cargoAtual].quantidade;
-
-
-              /* Verifica o limite de números */
-
-              if (
-
-                  numerosDigitados.length >=
-                  quantidadeMaxima
-
-              ) {
-
-                  return;
-
-              }
+                }
 
 
-              /* Pega o número da tecla */
-
-              const numero =
-                  tecla.dataset.numero;
+                votoBranco = false;
 
 
-              /* Adiciona o número */
+                numeroDigitado +=
 
-              numerosDigitados +=
-                  numero;
-
-
-              /* Toca o som */
-
-              tocarSomTecla();
+                    tecla.dataset.numero;
 
 
-              /* Atualiza a tela */
+                somTecla();
 
-              atualizarTela();
 
-          }
+                atualizarNumeros();
 
-      );
 
-  }
+                verificarCandidato();
+
+            }
+
+        );
+
+    }
 
 );
 
 
-/* =========================================
- BOTÃO CORRIGE
-========================================= */
+/* =====================================
+   ATUALIZAR OS CINCO NÚMEROS
+===================================== */
+
+function atualizarNumeros() {
+
+    caixasNumero.forEach(
+
+        function (
+
+            caixa,
+
+            indice
+
+        ) {
+
+            caixa.textContent =
+
+                numeroDigitado[indice] ||
+
+                "";
+
+        }
+
+    );
+
+}
+
+
+/* =====================================
+   VERIFICAR CANDIDATO
+===================================== */
+
+function verificarCandidato() {
+
+    if (
+
+        numeroDigitado.length < 5
+
+    ) {
+
+        mensagemUrna.textContent =
+
+            "DIGITE O NÚMERO DO CANDIDATO";
+
+
+        return;
+
+    }
+
+
+    const cargoAtual =
+
+        cargos[indiceCargo];
+
+
+    const candidato =
+
+        candidatos[cargoAtual]
+        [numeroDigitado];
+
+
+    dadosCandidato.classList.add(
+        "ativo"
+    );
+
+
+    if (candidato) {
+
+        nomeCandidato.textContent =
+
+            candidato.nome;
+
+
+        partidoCandidato.textContent =
+
+            candidato.partido;
+
+
+        mensagemUrna.textContent =
+
+            "CONFIRA OS DADOS E CONFIRME";
+
+    }
+
+    else {
+
+        nomeCandidato.textContent =
+
+            "NÚMERO INVÁLIDO";
+
+
+        partidoCandidato.textContent =
+
+            "---";
+
+
+        mensagemUrna.textContent =
+
+            "NÚMERO INVÁLIDO";
+
+    }
+
+}
+
+
+/* =====================================
+   BOTÃO CORRIGE
+===================================== */
 
 botaoCorrige.addEventListener(
 
@@ -809,31 +465,51 @@ botaoCorrige.addEventListener(
 
     function () {
 
-        /* Toca o som do botão */
+        if (votoConfirmado) {
 
-        tocarSomCorrige();
+            return;
 
-
-        /* Remove o último número */
-
-        numerosDigitados =
-            numerosDigitados.slice(
-                0,
-                -1
-            );
+        }
 
 
-        /* Atualiza a tela */
+        numeroDigitado = "";
 
-        atualizarTela();
+        votoBranco = false;
+
+
+        atualizarNumeros();
+
+
+        dadosCandidato.classList.remove(
+            "ativo"
+        );
+
+
+        nomeCandidato.textContent =
+
+            "Digite o número";
+
+
+        partidoCandidato.textContent =
+
+            "---";
+
+
+        mensagemUrna.textContent =
+
+            "DIGITE O NÚMERO DO CANDIDATO";
+
+
+        somTecla();
 
     }
 
 );
 
-/* =========================================
- BOTÃO BRANCO
-========================================= */
+
+/* =====================================
+   BOTÃO BRANCO
+===================================== */
 
 botaoBranco.addEventListener(
 
@@ -848,45 +524,34 @@ botaoBranco.addEventListener(
         }
 
 
-        /* Toca o som */
-
-        tocarSomBranco();
-
-
-        /* Limpa os números */
-
-        numerosDigitados = "";
-
-
-        /* Marca o voto como branco */
+        numeroDigitado = "";
 
         votoBranco = true;
 
 
-        /* Atualiza a tela */
-
-        atualizarTela();
+        atualizarNumeros();
 
 
-        /* Mostra a informação */
-
-        nomeCandidato.textContent =
-            "VOTO EM BRANCO";
-
-
-        partidoCandidato.textContent =
-            "---";
+        dadosCandidato.classList.remove(
+            "ativo"
+        );
 
 
         mensagemUrna.textContent =
-            "PRESSIONE CONFIRMA";
+
+            "VOTO EM BRANCO";
+
+
+        somTecla();
 
     }
 
 );
-/* =========================================
- BOTÃO CONFIRMA
-========================================= */
+
+
+/* =====================================
+   CONFIRMAR
+===================================== */
 
 botaoConfirma.addEventListener(
 
@@ -901,188 +566,187 @@ botaoConfirma.addEventListener(
         }
 
 
-        const cargo =
-            cargos[cargoAtual];
+        const cargoAtual =
+
+            cargos[indiceCargo];
 
 
         const candidato =
-            candidatos[cargo.tipo][
-                numerosDigitados
-            ];
 
+            candidatos[cargoAtual]
+            [numeroDigitado];
 
-        /*
-           Se não existe candidato
-           e não foi voto branco
-        */
 
         if (
 
-            !candidato &&
+            !votoBranco &&
 
-            !votoBranco
+            !candidato
 
         ) {
 
             mensagemUrna.textContent =
-                "VOTO NULO";
+
+                "DIGITE UM CANDIDATO VÁLIDO";
+
+            return;
 
         }
-
-
-        /*
-           Toca o som da confirmação
-        */
-
-        tocarSomConfirma();
-
-
-        /*
-           Mostra a confirmação
-        */
-
-        mensagemUrna.textContent =
-            "VOTO CONFIRMADO";
 
 
         votoConfirmado = true;
 
 
-        /*
-           Aguarda antes de mudar
-           para o próximo cargo
-        */
+        mensagemUrna.textContent =
+
+            "VOTO CONFIRMADO";
+
+
+        somConfirma();
+
 
         setTimeout(
 
-            function () {
+            proximoCargo,
 
-                proximoCargo();
-
-            },
-
-            1200
+            1300
 
         );
 
     }
 
 );
-/* =========================================
- PRÓXIMO CARGO
-========================================= */
+
+
+/* =====================================
+   PRÓXIMO CARGO
+===================================== */
 
 function proximoCargo() {
 
-  /* Avança o cargo */
-
-  cargoAtual++;
+    indiceCargo++;
 
 
-  /*
-     Verifica se ainda existem cargos
-  */
+    if (
 
-  if (
+        indiceCargo < cargos.length
 
-      cargoAtual < cargos.length
+    ) {
 
-  ) {
+        cargoTela.textContent =
 
-      /* Limpa a votação */
-
-      numerosDigitados = "";
+            cargos[indiceCargo];
 
 
-      votoBranco = false;
+        reiniciarVotacao();
 
+    }
 
-      votoConfirmado = false;
+    else {
 
+        finalizarEleicao();
 
-      /* Atualiza a urna */
-
-      atualizarTela();
-
-  }
-
-  else {
-
-      finalizarEleicao();
-
-  }
+    }
 
 }
 
 
-/* =========================================
- FINALIZAR ELEIÇÃO
-========================================= */
+/* =====================================
+   REINICIAR
+===================================== */
 
-/* =========================================
-   FINALIZAR ELEIÇÃO
-========================================= */
+function reiniciarVotacao() {
 
-function finalizarEleicao() {
+    numeroDigitado = "";
 
-    /*
-       Esconde todas as caixas
-       de números
-    */
+    votoBranco = false;
 
-    numero1.style.display = "none";
-
-    numero2.style.display = "none";
-
-    numero3.style.display = "none";
-
-    numero4.style.display = "none";
-
-    numero5.style.display = "none";
+    votoConfirmado = false;
 
 
-    /*
-       Mostra somente FIM
-    */
-
-    cargoTela.textContent =
-        "FIM";
+    atualizarNumeros();
 
 
-    /*
-       Remove os outros textos
-    */
+    dadosCandidato.classList.remove(
+        "ativo"
+    );
+
 
     nomeCandidato.textContent =
-        "";
+
+        "Digite o número";
 
 
     partidoCandidato.textContent =
-        "";
 
+        "---";
 
-    /*
-       Limpa a mensagem inferior
-    */
 
     mensagemUrna.textContent =
-        "";
+
+        "DIGITE O NÚMERO DO CANDIDATO";
+
+}
 
 
-    /*
-       Toca a melodia final
-    */
+/* =====================================
+   FINAL
+===================================== */
+
+function finalizarEleicao() {
+
+    document.querySelector(".tela")
+        .innerHTML =
+
+        "<div class='fim-texto'>FIM</div>";
+
+
+    document.querySelector(".tela")
+        .classList.add(
+            "tela-fim"
+        );
+
+
+    somConfirma();
+
+
+    eleitorAtual++;
+
+
+    numeroEleitor.textContent =
+
+        eleitorAtual;
+
 
     setTimeout(
 
         function () {
 
-            tocarSomFinal();
+            if (
+
+                eleitorAtual <= 2
+
+            ) {
+
+                reiniciarSistema();
+
+            }
 
         },
 
-        300
+        3000
 
     );
+
+}
+
+
+/* =====================================
+   NOVO ELEITOR
+===================================== */
+
+function reiniciarSistema() {
+
+    location.reload();
 
 }
