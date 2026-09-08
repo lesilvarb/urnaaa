@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Urna por Gestos</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================
+         CABEÇALHO
+    ====================================== -->
+
+    <header class="topo">
+
+        <h1>URNA POR GESTOS</h1>
+
+
+        <div class="acoes-topo">
+
+            <button id="abrirCamera">
+
+                ATIVAR CÂMERA
+
+            </button>
+
+
+            <div class="eleitor">
+
+                Eleitor
+
+                <span id="numeroEleitor">
+                    1
+                </span>
+
+                de 2
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================
+         ÁREA PRINCIPAL
+    ====================================== -->
+
+    <main class="area-principal">
+
+
+        <!-- =================================
+             URNA
+        ================================== -->
+
+        <section class="urna">
+
+
+            <!-- =============================
+                 TELA
+            ============================== -->
+
+            <div class="tela">
+
+
+                <!-- CARGO -->
+
+                <h2 id="cargoTela">
+
+                    GOVERNADOR
+
+                </h2>
+
+
+
+                <!-- NÚMEROS DIGITADOS -->
+
+                <div class="numeros">
+
+                    <div
+                        class="numero-box"
+                        id="numero1"
+                    ></div>
+
+
+                    <div
+                        class="numero-box"
+                        id="numero2"
+                    ></div>
+
+
+                    <div
+                        class="numero-box"
+                        id="numero3"
+                    ></div>
+
+
+                    <div
+                        class="numero-box"
+                        id="numero4"
+                    ></div>
+
+
+                    <div
+                        class="numero-box"
+                        id="numero5"
+                    ></div>
+
+                </div>
+
+
+
+                <!-- INFORMAÇÕES DO CANDIDATO -->
+
+                <div
+                    id="dadosCandidato"
+                    class="dados-candidato"
+                >
+
+
+                    <div class="foto-candidato">
+
+                        <span id="iconeCandidato">
+
+                            👤
+
+                        </span>
+
+                    </div>
+
+
+
+                    <div class="informacoes">
+
+
+                        <p>
+
+                            <strong>NOME:</strong>
+
+                            <span id="nomeCandidato">
+
+                                Digite o número
+
+                            </span>
+
+                        </p>
+
+
+
+                        <p>
+
+                            <strong>PARTIDO:</strong>
+
+                            <span id="partidoCandidato">
+
+                                ---
+
+                            </span>
+
+                        </p>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- MENSAGEM DA URNA -->
+
+                <div
+                    id="mensagemUrna"
+                    class="mensagem-urna"
+                >
+
+                    DIGITE O NÚMERO DO CANDIDATO
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =============================
+                 PAINEL DA DIREITA
+            ============================== -->
+
+            <div class="painel-direito">
+
+
+                <h2>
+
+                    JUSTIÇA ELEITORAL
+
+                </h2>
+
+
+                <div class="linha"></div>
+
+
+
+                <!-- TECLADO -->
+
+                <div class="teclado">
+
+
+                    <button
+                        class="tecla"
+                        data-numero="1"
+                    >
+                        1
+                    </button>
+
+
+                    <button
+                        class="tecla"
+                        data-numero="2"
+                    >
+                        2
+                    </button>
+
+
+                    <button
+                        class="tecla"
+                        data-numero="3"
+                    >
+                        3
+                    </button>
+
+
+                    <button
+                        class="tecla"
+                        data-numero="4"
+                    >
+                        4
+                    </button>
+
+
+                    <button
+                        class="tecla"
+                        data-numero="5"
+                    >
+                        5
+                    </button>
+
+
+                    <button
+                        class="tecla"
+                        data-numero="6"
+                    >
+                        6
+                    </button>
+
+
+                    <button
+                        class="tecla"
+                        data-numero="7"
+                    >
+                        7
+                    </button>
+
+
+                    <button
+                        class="tecla"
+                        data-numero="8"
+                    >
+                        8
+                    </button>
+
+
+                    <button
+                        class="tecla"
+                        data-numero="9"
+                    >
+                        9
+                    </button>
+
+
+                    <button
+                        class="tecla tecla-zero"
+                        data-numero="0"
+                    >
+                        0
+                    </button>
+
+
+                </div>
+
+
+
+                <!-- BOTÕES PRINCIPAIS -->
+
+                <div class="botoes">
+
+
+                    <button
+                        id="branco"
+                        class="botao branco"
+                    >
+
+                        BRANCO
+
+                    </button>
+
+
+
+                    <button
+                        id="corrige"
+                        class="botao corrige"
+                    >
+
+                        CORRIGE
+
+                    </button>
+
+
+
+                    <button
+                        id="confirma"
+                        class="botao confirma"
+                    >
+
+                        CONFIRMA
+
+                    </button>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================
+             STATUS DA CÂMERA
+
+             NÃO É UMA TELA DA CÂMERA.
+             A CÂMERA CONTINUA ESCONDIDA.
+        ================================== -->
+
+        <div
+            id="statusGestos"
+            class="status-gestos"
+        >
+
+            GESTOS: CÂMERA DESLIGADA
+
+        </div>
+
+
+    </main>
+
+
+
+    <!-- =====================================
+         CÂMERA OCULTA
+    ====================================== -->
+
+    <video
+        id="camera"
+        autoplay
+        playsinline
+        muted
+        class="camera-invisivel"
+    >
+    </video>
+
+
+
+    <!-- =====================================
+         VLibras
+    ====================================== -->
+
+    <div
+        vw
+        class="enabled"
+    >
+
+        <div
+            vw-access-button
+            class="active"
+        >
+        </div>
+
+
+        <div vw-plugin-wrapper>
+
+            <div
+                class="vw-plugin-top-wrapper"
+            >
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================
+         BIBLIOTECAS
+
+         Use as mesmas bibliotecas do
+         seu projeto anterior.
+    ====================================== -->
+
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+
+
+    <script>
+
+        new window.VLibras.Widget(
+            "https://vlibras.gov.br/app"
+        );
+
+    </script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+
+
+
+    <!-- =====================================
+         JAVASCRIPT DO PROJETO
+    ====================================== -->
+
+    <script src="script.js"></script>
+
+    <script src="camera.js"></script>
+
+
+</body>
+
+</html>
